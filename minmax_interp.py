@@ -172,106 +172,106 @@ def downsample_interpolate(time_arr, values, n_bins):
     return new_time, new_values
 
 
-# --------------------------
-# Create a test signal
-# --------------------------
-N = 1_000_000
-time_arr = np.linspace(0, 10, N)
-# A noisy sine wave that includes negative values
-values = np.sin(time_arr) - 0.5 + np.random.randn(N) * 0.1
+if __name__ == "__main__":
+    # --------------------------
+    # Create a test signal
+    # --------------------------
+    N = 1_000_000
+    time_arr = np.linspace(0, 10, N)
+    # A noisy sine wave that includes negative values
+    values = np.sin(time_arr) - 0.5 + np.random.randn(N) * 0.1
 
-n_bins = 1000
+    n_bins = 1000
 
-# Warm up the Numba function
-minmax_downsample(time_arr, values, n_bins)
+    # Warm up the Numba function
+    minmax_downsample(time_arr, values, n_bins)
 
-# Benchmark and compute min/max downsampling.
-start = time.time()
-t_minmax, v_minmax = minmax_downsample(time_arr, values, n_bins)
-minmax_time = (time.time() - start) * 1000
+    # Benchmark and compute min/max downsampling.
+    start = time.time()
+    t_minmax, v_minmax = minmax_downsample(time_arr, values, n_bins)
+    minmax_time = (time.time() - start) * 1000
 
-# Benchmark and compute interpolation downsampling.
-start = time.time()
-t_interp, v_interp = downsample_interpolate(time_arr, values, n_bins)
-interp_time = (time.time() - start) * 1000
+    # Benchmark and compute interpolation downsampling.
+    start = time.time()
+    t_interp, v_interp = downsample_interpolate(time_arr, values, n_bins)
+    interp_time = (time.time() - start) * 1000
 
-# Test the parallel version with the same signal.
-N = 1_000_000
-time_arr = np.linspace(0, 10, N)
-values = np.sin(time_arr) - 0.5 + np.random.randn(N) * 0.1
+    # Test the parallel version with the same signal.
+    N = 1_000_000
+    time_arr = np.linspace(0, 10, N)
+    values = np.sin(time_arr) - 0.5 + np.random.randn(N) * 0.1
 
-n_bins = 1000
+    n_bins = 1000
 
-# Warm up the parallel function.
-minmax_downsample_parallel(time_arr, values, n_bins)
+    # Warm up the parallel function.
+    minmax_downsample_parallel(time_arr, values, n_bins)
 
-start = time.time()
-t_minmax_par, v_minmax_par = minmax_downsample_parallel(time_arr, values, n_bins)
-parallel_time = (time.time() - start) * 1000
+    start = time.time()
+    t_minmax_par, v_minmax_par = minmax_downsample_parallel(time_arr, values, n_bins)
+    parallel_time = (time.time() - start) * 1000
 
+    print(f"Min/Max Downsampling time: {minmax_time:.2f} ms")
+    print(f"Parallel Min/Max Downsampling time: {parallel_time:.2f} ms")
+    print(f"Interpolation Downsampling time: {interp_time:.2f} ms")
 
-print(f"Min/Max Downsampling time: {minmax_time:.2f} ms")
-print(f"Parallel Min/Max Downsampling time: {parallel_time:.2f} ms")
-print(f"Interpolation Downsampling time: {interp_time:.2f} ms")
+    # --------------------------
+    # Plot with Plotly
+    # --------------------------
+    # Create a Plotly figure with two subplots: one for each method.
+    fig = make_subplots(
+        rows=2,
+        cols=1,
+        subplot_titles=("Min/Max Downsampling", "Interpolation Downsampling"),
+        shared_xaxes=True,
+    )
 
-# --------------------------
-# Plot with Plotly
-# --------------------------
-# Create a Plotly figure with two subplots: one for each method.
-fig = make_subplots(
-    rows=2,
-    cols=1,
-    subplot_titles=("Min/Max Downsampling", "Interpolation Downsampling"),
-    shared_xaxes=True,
-)
+    # Original signal (a light background trace) for context.
+    orig_trace = go.Scattergl(
+        x=time_arr,
+        y=values,
+        mode="lines",
+        line=dict(color="lightgray"),
+        name="Original Signal",
+    )
 
-# Original signal (a light background trace) for context.
-orig_trace = go.Scattergl(
-    x=time_arr,
-    y=values,
-    mode="lines",
-    line=dict(color="lightgray"),
-    name="Original Signal",
-)
+    # Min/Max downsampled trace
+    minmax_trace = go.Scattergl(
+        x=t_minmax,
+        y=v_minmax,
+        mode="lines+markers",
+        marker=dict(color="red", size=3),
+        line=dict(color="red"),
+        name="Min/Max Downsampled",
+    )
 
-# Min/Max downsampled trace
-minmax_trace = go.Scattergl(
-    x=t_minmax,
-    y=v_minmax,
-    mode="lines+markers",
-    marker=dict(color="red", size=3),
-    line=dict(color="red"),
-    name="Min/Max Downsampled",
-)
+    # Interpolated trace
+    interp_trace = go.Scattergl(
+        x=t_interp,
+        y=v_interp,
+        mode="lines+markers",
+        marker=dict(color="blue", size=3),
+        line=dict(color="blue"),
+        name="Interpolated Downsampled",
+    )
 
-# Interpolated trace
-interp_trace = go.Scattergl(
-    x=t_interp,
-    y=v_interp,
-    mode="lines+markers",
-    marker=dict(color="blue", size=3),
-    line=dict(color="blue"),
-    name="Interpolated Downsampled",
-)
+    # Add traces to the subplots.
+    fig.add_trace(orig_trace, row=1, col=1)
+    fig.add_trace(minmax_trace, row=1, col=1)
 
-# Add traces to the subplots.
-fig.add_trace(orig_trace, row=1, col=1)
-fig.add_trace(minmax_trace, row=1, col=1)
+    fig.add_trace(orig_trace, row=2, col=1)
+    fig.add_trace(interp_trace, row=2, col=1)
 
-fig.add_trace(orig_trace, row=2, col=1)
-fig.add_trace(interp_trace, row=2, col=1)
+    # Update layout for clarity.
+    fig.update_layout(
+        height=800,
+        width=900,
+        title_text="Comparison of Downsampling Methods",
+        xaxis_title="Time",
+        yaxis_title="Signal Value",
+    )
 
-# Update layout for clarity.
-fig.update_layout(
-    height=800,
-    width=900,
-    title_text="Comparison of Downsampling Methods",
-    xaxis_title="Time",
-    yaxis_title="Signal Value",
-)
+    fig.update_xaxes(title_text="Time")
+    fig.update_yaxes(title_text="Signal Value")
 
-fig.update_xaxes(title_text="Time")
-fig.update_yaxes(title_text="Signal Value")
-
-# Show the interactive plot.
-fig.show()
+    # Show the interactive plot.
+    fig.show()

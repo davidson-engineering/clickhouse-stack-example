@@ -1,0 +1,566 @@
+{
+    "annotations": {
+        "list": [
+            {
+                "builtIn": 1,
+                "datasource": {
+                    "type": "grafana",
+                    "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+            }
+        ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 1,
+    "links": [],
+    "panels": [
+        {
+            "datasource": {
+                "default": true,
+                "type": "grafana-clickhouse-datasource",
+                "uid": "ded6wdsiklfy8a"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "fillOpacity": 70,
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "pointShape": "circle",
+                        "pointSize": {
+                            "fixed": 3
+                        },
+                        "pointStrokeWidth": 2,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "show": "points"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "time_bucket"
+                        },
+                        "properties": [
+                            {
+                                "id": "unit",
+                                "value": "ns"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 11,
+                "w": 24,
+                "x": 0,
+                "y": 0
+            },
+            "id": 2,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "count",
+                        "min",
+                        "max"
+                    ],
+                    "displayMode": "table",
+                    "placement": "right",
+                    "showLegend": true
+                },
+                "mapping": "auto",
+                "series": [
+                    {
+                        "x": {
+                            "matcher": {
+                                "id": "byName",
+                                "options": "time_bucket"
+                            }
+                        },
+                        "y": {
+                            "matcher": {
+                                "id": "byName",
+                                "options": "avg_value"
+                            }
+                        }
+                    }
+                ],
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "pluginVersion": "11.2.0",
+            "targets": [
+                {
+                    "builderOptions": {
+                        "aggregates": [],
+                        "columns": [
+                            {
+                                "alias": "*",
+                                "custom": false,
+                                "name": "*",
+                                "type": "String"
+                            }
+                        ],
+                        "database": "default",
+                        "filters": [],
+                        "groupBy": [],
+                        "limit": 0,
+                        "meta": {},
+                        "mode": "list",
+                        "orderBy": [
+                            {
+                                "dir": "ASC",
+                                "name": "wave_id"
+                            },
+                            {
+                                "dir": "ASC",
+                                "name": "rel_time"
+                            }
+                        ],
+                        "queryType": "table",
+                        "table": "sample_data"
+                    },
+                    "datasource": {
+                        "type": "grafana-clickhouse-datasource",
+                        "uid": "ded6wdsiklfy8a"
+                    },
+                    "editorType": "sql",
+                    "format": 1,
+                    "hide": true,
+                    "meta": {
+                        "builderOptions": {
+                            "aggregates": [],
+                            "columns": [
+                                {
+                                    "alias": "*",
+                                    "custom": false,
+                                    "name": "*",
+                                    "type": "String"
+                                }
+                            ],
+                            "database": "default",
+                            "filters": [],
+                            "groupBy": [],
+                            "limit": 0,
+                            "meta": {},
+                            "mode": "list",
+                            "orderBy": [
+                                {
+                                    "dir": "ASC",
+                                    "name": "wave_id"
+                                },
+                                {
+                                    "dir": "ASC",
+                                    "name": "rel_time"
+                                }
+                            ],
+                            "queryType": "table",
+                            "table": "sample_data"
+                        }
+                    },
+                    "pluginVersion": "4.8.0",
+                    "queryType": "table",
+                    "rawSql": "SELECT * FROM \"default\".\"sample_data\" ORDER BY wave_id ASC, rel_time ASC",
+                    "refId": "A"
+                },
+                {
+                    "datasource": {
+                        "type": "grafana-clickhouse-datasource",
+                        "uid": "ded6wdsiklfy8a"
+                    },
+                    "editorType": "sql",
+                    "format": 1,
+                    "hide": false,
+                    "meta": {
+                        "builderOptions": {
+                            "columns": [],
+                            "database": "",
+                            "limit": 1000,
+                            "mode": "list",
+                            "queryType": "table",
+                            "table": ""
+                        }
+                    },
+                    "pluginVersion": "4.8.0",
+                    "queryType": "table",
+                    "rawSql": "SELECT\n    wave_id,\n    floor(rel_time/1/1E6) * 1 *1E6 AS time_bucket,\n    avg(value) AS avg_value,\n    count() AS samples\nFROM raw_data\nGROUP BY wave_id, time_bucket\nORDER BY wave_id, time_bucket",
+                    "refId": "B"
+                }
+            ],
+            "title": "Raw Data",
+            "transformations": [
+                {
+                    "id": "partitionByValues",
+                    "options": {
+                        "fields": [
+                            "wave_id"
+                        ],
+                        "keepFields": false
+                    }
+                }
+            ],
+            "type": "xychart"
+        },
+        {
+            "datasource": {
+                "default": true,
+                "type": "grafana-clickhouse-datasource",
+                "uid": "ded6wdsiklfy8a"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "fillOpacity": 70,
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "pointShape": "circle",
+                        "pointSize": {
+                            "fixed": 3
+                        },
+                        "pointStrokeWidth": 2,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "show": "points"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "time_bucket"
+                        },
+                        "properties": [
+                            {
+                                "id": "unit",
+                                "value": "ns"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 11,
+                "w": 24,
+                "x": 0,
+                "y": 11
+            },
+            "id": 3,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "count",
+                        "min",
+                        "max"
+                    ],
+                    "displayMode": "table",
+                    "placement": "right",
+                    "showLegend": true
+                },
+                "mapping": "auto",
+                "series": [
+                    {
+                        "x": {
+                            "matcher": {
+                                "id": "byName",
+                                "options": "time_bucket"
+                            }
+                        },
+                        "y": {
+                            "matcher": {
+                                "id": "byName",
+                                "options": "avg_value"
+                            }
+                        }
+                    }
+                ],
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "pluginVersion": "11.2.0",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-clickhouse-datasource",
+                        "uid": "ded6wdsiklfy8a"
+                    },
+                    "editorType": "sql",
+                    "format": 1,
+                    "hide": false,
+                    "meta": {
+                        "builderOptions": {
+                            "columns": [],
+                            "database": "",
+                            "limit": 1000,
+                            "mode": "list",
+                            "queryType": "table",
+                            "table": ""
+                        }
+                    },
+                    "pluginVersion": "4.8.0",
+                    "queryType": "table",
+                    "rawSql": "SELECT\n    wave_id,\n    floor(rel_time/10/1E6) * 10 *1E6 AS time_bucket,\n    avg(value) AS avg_value,\n    count() AS samples\nFROM raw_data\nGROUP BY wave_id, time_bucket\nORDER BY wave_id, time_bucket",
+                    "refId": "B"
+                },
+                {
+                    "datasource": {
+                        "type": "grafana-clickhouse-datasource",
+                        "uid": "ded6wdsiklfy8a"
+                    },
+                    "editorType": "sql",
+                    "format": 1,
+                    "hide": true,
+                    "meta": {
+                        "builderOptions": {
+                            "columns": [],
+                            "database": "",
+                            "limit": 1000,
+                            "mode": "list",
+                            "queryType": "table",
+                            "table": ""
+                        }
+                    },
+                    "pluginVersion": "4.8.0",
+                    "queryType": "table",
+                    "rawSql": "SELECT\n    wave_id,\n    floor(rel_time/${rez}/1E6) * ${rez} *1E6 AS time_bucket,\n    avg(value) AS avg_value,\n    count() AS samples\nFROM processed_data\nGROUP BY wave_id, time_bucket\nORDER BY wave_id, time_bucket",
+                    "refId": "C"
+                }
+            ],
+            "title": "Decimated (Avg of 1/10 points)",
+            "transformations": [
+                {
+                    "id": "partitionByValues",
+                    "options": {
+                        "fields": [
+                            "wave_id"
+                        ],
+                        "keepFields": false
+                    }
+                }
+            ],
+            "type": "xychart"
+        },
+        {
+            "datasource": {
+                "default": true,
+                "type": "grafana-clickhouse-datasource",
+                "uid": "ded6wdsiklfy8a"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "fillOpacity": 75,
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "pointShape": "circle",
+                        "pointSize": {
+                            "fixed": 5
+                        },
+                        "pointStrokeWidth": 2,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "show": "points"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "time_bucket"
+                        },
+                        "properties": [
+                            {
+                                "id": "unit",
+                                "value": "ns"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 10,
+                "w": 24,
+                "x": 0,
+                "y": 22
+            },
+            "id": 1,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "count",
+                        "min",
+                        "max"
+                    ],
+                    "displayMode": "table",
+                    "placement": "right",
+                    "showLegend": true
+                },
+                "mapping": "auto",
+                "series": [
+                    {
+                        "x": {
+                            "matcher": {
+                                "id": "byName",
+                                "options": "time_bucket"
+                            }
+                        },
+                        "y": {
+                            "matcher": {
+                                "id": "byName",
+                                "options": "avg_value"
+                            }
+                        }
+                    }
+                ],
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "pluginVersion": "11.2.0",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-clickhouse-datasource",
+                        "uid": "ded6wdsiklfy8a"
+                    },
+                    "editorType": "sql",
+                    "format": 1,
+                    "hide": false,
+                    "meta": {
+                        "builderOptions": {
+                            "columns": [],
+                            "database": "",
+                            "limit": 1000,
+                            "mode": "list",
+                            "queryType": "table",
+                            "table": ""
+                        }
+                    },
+                    "pluginVersion": "4.8.0",
+                    "queryType": "table",
+                    "rawSql": "SELECT\n    wave_id,\n    floor(rel_time/1/1E6) * 1 *1E6 AS time_bucket,\n    avg(value) AS avg_value,\n    count() AS samples\nFROM processed_data\nGROUP BY wave_id, time_bucket\nORDER BY wave_id, time_bucket",
+                    "refId": "C"
+                }
+            ],
+            "title": "Min/Max Downsampling Method",
+            "transformations": [
+                {
+                    "id": "partitionByValues",
+                    "options": {
+                        "fields": [
+                            "wave_id"
+                        ],
+                        "keepFields": false
+                    }
+                }
+            ],
+            "type": "xychart"
+        }
+    ],
+    "refresh": "",
+    "schemaVersion": 39,
+    "tags": [],
+    "templating": {
+        "list": []
+    },
+    "time": {
+        "from": "2025-02-16T08:30:23.895Z",
+        "to": "2025-02-16T08:40:23.895Z"
+    },
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "New dashboard",
+    "uid": "fed7j1bcc0a9sa",
+    "version": 2,
+    "weekStart": ""
+}
