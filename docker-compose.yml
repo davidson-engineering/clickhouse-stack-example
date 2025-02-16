@@ -1,0 +1,26 @@
+# version: '3.8'`
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse
+    ports:
+      - "8123:8123" # HTTP interface
+      - "9000:9000" # Native client interface
+    environment:
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=your_secure_password
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - clickhouse
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "admin" # Set Grafana admin password if desired
+
+volumes:
+  clickhouse_data:
